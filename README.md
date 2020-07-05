@@ -1,7 +1,7 @@
-# Energy Web Token(EWT) Price Ticker Display
+# EnergyWebToken (EWT) Price Ticker Display
 
 <short about text>
-Energy Web Token(EWT) Price Ticker that runs on $6 IoT development board and displays realtime informationn from CinMarketCap such as price, volume and changes. This library does not require an API key due to hacing an embedded CoinMarketCap root certificate and consuming secured HTTPS RESTful APIs<br />
+EnergyWebToken (EWT) Price Ticker that runs on $6 IoT development board and displays realtime informationn from CinMarketCap such as price, volume and changes. This library does not require an API key due to hacing an embedded CoinMarketCap root certificate and consuming secured HTTPS RESTful APIs<br />
 
 Runs on a perfect low-cost, low-powered IoT development board: TTGO T-Display (ESP32 microprocessor based board with Wifi, Bluetooth and 1.4" LCD Display)<br />
 
