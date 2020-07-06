@@ -1,7 +1,6 @@
 /*
- * Energy Web Token (EWT) Price Ticker Display for TTGO T-Display
- * This library does not require an API key due to hacing an embedded 
- * CoinMarketCap root certificate and consuming secured HTTPS RESTful APIs.
+ * EnergyWebToken (EWT) Price Ticker for CoinMarketCap public web API
+ * This does not require API key since its just consuming CMC web RESTFul APIs
  * 
 */
 
@@ -22,36 +21,11 @@
 #define wifi_password "YOUR-WIFI-PASSWORD"
 
 
-
 WiFiClientSecure client;
 WiFiClient espClient2;
 
 unsigned long api_mtbs = 60000;
 unsigned long api_due_time = 0;
-
-// CMC Root CA_Cert (Expires: Tuesday, 13. May 2025)
-const char* cmc_root_ca= \
-"-----BEGIN CERTIFICATE-----\n" \
-"MIIDdzCCAl+gAwIBAgIEAgAAuTANBgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJJ\n" \
-"RTESMBAGA1UEChMJQmFsdGltb3JlMRMwEQYDVQQLEwpDeWJlclRydXN0MSIwIAYD\n" \
-"VQQDExlCYWx0aW1vcmUgQ3liZXJUcnVzdCBSb290MB4XDTAwMDUxMjE4NDYwMFoX\n" \
-"DTI1MDUxMjIzNTkwMFowWjELMAkGA1UEBhMCSUUxEjAQBgNVBAoTCUJhbHRpbW9y\n" \
-"ZTETMBEGA1UECxMKQ3liZXJUcnVzdDEiMCAGA1UEAxMZQmFsdGltb3JlIEN5YmVy\n" \
-"VHJ1c3QgUm9vdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKMEuyKr\n" \
-"mD1X6CZymrV51Cni4eiVgLGw41uOKymaZN+hXe2wCQVt2yguzmKiYv60iNoS6zjr\n" \
-"IZ3AQSsBUnuId9Mcj8e6uYi1agnnc+gRQKfRzMpijS3ljwumUNKoUMMo6vWrJYeK\n" \
-"mpYcqWe4PwzV9/lSEy/CG9VwcPCPwBLKBsua4dnKM3p31vjsufFoREJIE9LAwqSu\n" \
-"XmD+tqYF/LTdB1kC1FkYmGP1pWPgkAx9XbIGevOF6uvUA65ehD5f/xXtabz5OTZy\n" \
-"dc93Uk3zyZAsuT3lySNTPx8kmCFcB5kpvcY67Oduhjprl3RjM71oGDHweI12v/ye\n" \
-"jl0qhqdNkNwnGjkCAwEAAaNFMEMwHQYDVR0OBBYEFOWdWTCCR1jMrPoIVDaGezq1\n" \
-"BE3wMBIGA1UdEwEB/wQIMAYBAf8CAQMwDgYDVR0PAQH/BAQDAgEGMA0GCSqGSIb3\n" \
-"DQEBBQUAA4IBAQCFDF2O5G9RaEIFoN27TyclhAO992T9Ldcw46QQF+vaKSm2eT92\n" \
-"9hkTI7gQCvlYpNRhcL0EYWoSihfVCr3FvDB81ukMJY2GQE/szKN+OMY3EU/t3Wgx\n" \
-"jkzSswF07r51XgdIGn9w/xZchMB5hbgF/X++ZRGjD8ACtPhSNzkE1akxehi/oCr0\n" \
-"Epn3o0WC4zxe9Z2etciefC7IpJ5OCBRLbf1wbWsaY71k5h+3zvDyny67G7fyUIhz\n" \
-"ksLi4xaNmjICq44Y3ekQEe5+NauQrz4wlHrQMz2nZQ/1/I6eYs9HRCwBXbsdtTLS\n" \
-"R9I4LtD+gdwyah617jzV/OeBHRnDJELqYzmp\n" \
-"-----END CERTIFICATE-----\n";
 
 
 // SPI TFT settings edit UserSetup !!!
@@ -156,7 +130,7 @@ void printTickerData() {
   
   HTTPClient http;
  
-    http.begin("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=5268", cmc_root_ca);
+    http.begin("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=5268");
     int httpCode = http.GET();
  
     if (httpCode > 0) { //Check for the returning code
