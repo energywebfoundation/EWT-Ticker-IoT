@@ -1,15 +1,15 @@
 # EnergyWebToken (EWT) Price Ticker Display
 
 <short about text>
-EnergyWebToken (EWT) Price Ticker that runs on $6 IoT development board and displays realtime informationn from CinMarketCap such as price, volume and changes. This library does not require an API key due to hacing an embedded CoinMarketCap root certificate and consuming secured HTTPS RESTful APIs<br />
+EnergyWebToken (EWT) Price Ticker that runs on $6 IoT development board and displays real-time informationn from CinMarketCap such as price, volume and changes. This library does not require an API key due to having an embedded CoinMarketCap root certificate and consuming secured HTTPS RESTful APIs<br />
 
-Runs on a perfect low-cost, low-powered IoT development board: TTGO T-Display (ESP32 microprocessor based board with Wifi, Bluetooth and 1.4" LCD Display)<br />
+Runs on a low-cost, low-powered IoT development board: TTGO T-Display (ESP32 microprocessor based board with Wifi, Bluetooth and 1.4" LCD Display)<br />
 
 ![EWT Ticker](images/screenshot_splash.png)
 ![EWT Ticker](images/screenshot_home.jpg)
 
 ## Maintainers
-**Primary**: Mani Hagh Sefat (@manihagh)
+**Primary**: Mani H. (@manihagh)
 
 
 ## Installation
@@ -18,10 +18,10 @@ Runs on a perfect low-cost, low-powered IoT development board: TTGO T-Display (E
 + [ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
 
 2. ### Configure TFT_eSPI settings:
-In TFT_eSPI/User_Setup_Select.h, comment out the default settings #include <User_Setup.h> , select #include <User_Setups/Setup25_TTGO_T_Display.h>, and save your changes.
+In `TFT_eSPI/User_Setup_Select.h` comment out the default settings `#include <User_Setup.h>` , select `#include <User_Setups/Setup25_TTGO_T_Display.h>`, and save your changes.
 
 3. ### Configure your Wifi AP:
-Open EWT-Ticker-TTGO-T-Display.ino and modify below two lines with your wifi SSID and password
+Open `EWT-Ticker-TTGO-T-Display.ino` and modify below two lines with your wifi SSID and password
 ```
 #define wifi_ssid "YOUR-WIFI-SSID"
 #define wifi_password "YOUR-WIFI-PASSWORD"
