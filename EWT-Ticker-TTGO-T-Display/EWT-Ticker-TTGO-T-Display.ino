@@ -1,7 +1,5 @@
 /*
- * EnergyWebToken (EWT) Price Ticker for CoinMarketCap public web API
- * This does not require API key since its just consuming CMC web RESTFul APIs
- * 
+ * EnergyWebToken(EWT) and Bitcoin(BTC) price ticker
 */
 
 // libraries
@@ -15,8 +13,9 @@
 #include "info.h"
 #include "ew_logo.h"
 #include "ewt_symbol.h"
+#include "btc_symbol.h"
 
-// network config
+// wifi config
 #define wifi_ssid "YOUR-WIFI-SSID"
 #define wifi_password "YOUR-WIFI-PASSWORD"
 
@@ -70,6 +69,7 @@ TFT_eSPI tft = TFT_eSPI(135, 240);
 #define ST7735_PINK    0xF8FF
 #define ST7735_CHYN    0x2D05
 
+String API_BASE_URL = "https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=";
 
 // begin setup
 void setup() {
@@ -118,34 +118,50 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   delay(1000);
-  tft.fillRect(0, 0, 240, 135, ST7735_BLACK);
-
-  tft.pushImage(0, 0, ewt_symbol_Width, ewt_symbol_Height, ewt_symbol);
 }
 
 
-void printTickerData() {
+void printTickerData(int tokenCode) {
   Serial.println("----------------------------");
-  Serial.println("Getting ticker data for EWT");
   
   HTTPClient http;
- 
-    http.begin("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=5268");
+    
+    String API_URL = API_BASE_URL + tokenCode;
+    http.useHTTP10(true);
+    http.begin(API_URL);
     int httpCode = http.GET();
- 
-    if (httpCode > 0) { //Check for the returning code
-        String payload = http.getString();        
-        DynamicJsonDocument doc(1024);
-        deserializeJson(doc, payload);
+
+    //Check for the API status code
+    if (httpCode > 0) {
+        DynamicJsonDocument doc(2048);
+        deserializeJson(doc, http.getStream());
         JsonObject responseObject = doc.as<JsonObject>();
-        
-        String cmc_rank = responseObject["data"]["5268"]["cmc_rank"];
-        double price_usd = responseObject["data"]["5268"]["quote"]["USD"]["price"];
-        int volume_24h = responseObject["data"]["5268"]["quote"]["USD"]["volume_24h"];
-        double percent_change_1h = responseObject["data"]["5268"]["quote"]["USD"]["percent_change_1h"];
-        double percent_change_24h = responseObject["data"]["5268"]["quote"]["USD"]["percent_change_24h"];
-        double percent_change_7d = responseObject["data"]["5268"]["quote"]["USD"]["percent_change_7d"];
-        String last_updated = responseObject["data"]["5268"]["quote"]["USD"]["last_updated"];
+
+        String cmc_rank = "";
+        double price_usd = 0.0;
+        int volume_24h = 0;
+        float percent_change_1h = 0.0;
+        float percent_change_24h = 0.0;
+        float percent_change_7d = 0.0;
+        String last_updated = "";
+          
+        if (tokenCode == 5268){
+          cmc_rank = responseObject["data"]["5268"]["cmc_rank"].as<String>();
+          price_usd = responseObject["data"]["5268"]["quote"]["USD"]["price"].as<double>();
+          volume_24h = responseObject["data"]["5268"]["quote"]["USD"]["volume_24h"].as<float>();
+          percent_change_1h = responseObject["data"]["5268"]["quote"]["USD"]["percent_change_1h"].as<float>();
+          percent_change_24h = responseObject["data"]["5268"]["quote"]["USD"]["percent_change_24h"].as<float>();
+          percent_change_7d = responseObject["data"]["5268"]["quote"]["USD"]["percent_change_7d"].as<float>();
+          last_updated = responseObject["data"]["5268"]["quote"]["USD"]["last_updated"].as<String>();
+        } else {
+          cmc_rank = responseObject["data"]["1"]["cmc_rank"].as<String>();
+          price_usd = responseObject["data"]["1"]["quote"]["USD"]["price"].as<double>();
+          volume_24h = responseObject["data"]["1"]["quote"]["USD"]["volume_24h"].as<float>();
+          percent_change_1h = responseObject["data"]["1"]["quote"]["USD"]["percent_change_1h"].as<float>();
+          percent_change_24h = responseObject["data"]["1"]["quote"]["USD"]["percent_change_24h"].as<float>();
+          percent_change_7d = responseObject["data"]["1"]["quote"]["USD"]["percent_change_7d"].as<float>();
+          last_updated = responseObject["data"]["1"]["quote"]["USD"]["last_updated"].as<String>();
+        }        
         Serial.println(cmc_rank);
         Serial.println(price_usd);               
         Serial.println(volume_24h);         
@@ -183,7 +199,7 @@ void printTickerData() {
         tft.drawLine(11, 103, 229, 103, ST7735_GRAY);        
                 
         // hours change
-        tft.fillRect(100, 110, 140, 25, ST7735_BLACK);    
+        tft.fillRect(0, 110, 240, 25, ST7735_BLACK);    
         tft.setTextColor(ST7735_YELLOW);
         
         if(percent_change_1h < 0){
@@ -192,13 +208,13 @@ void printTickerData() {
         if(percent_change_1h > 0){
         tft.setTextColor(ST7735_GREEN);
         }
-        tft.drawString("% Price 1h: ", 11, 110, 4);
+        tft.drawString("1h (%) ", 11, 110, 4);
         tft.drawString(String(percent_change_1h), 156, 110, 4);
         delay(20000);
         
         
         // 24 hours change
-        tft.fillRect(100, 110, 140, 25, ST7735_BLACK);    
+        tft.fillRect(0, 110, 240, 25, ST7735_BLACK);    
         tft.setTextColor(ST7735_YELLOW);
         
         if(percent_change_24h < 0){
@@ -207,13 +223,13 @@ void printTickerData() {
         if(percent_change_24h > 0){
         tft.setTextColor(ST7735_GREEN);
         }
-        tft.drawString("% Price 24h: ", 11, 110, 4);
+        tft.drawString("24h (%) ", 11, 110, 4);
         tft.drawString(String(percent_change_24h), 156, 110, 4);
         delay(20000);
         
         
         // 7d hours change
-        tft.fillRect(100, 110, 140, 25, ST7735_BLACK);    
+        tft.fillRect(0, 110, 240, 25, ST7735_BLACK);    
         tft.setTextColor(ST7735_YELLOW);
         
         if(percent_change_7d < 0){
@@ -222,7 +238,7 @@ void printTickerData() {
         if(percent_change_7d > 0){
           tft.setTextColor(ST7735_GREEN);
         }
-        tft.drawString("% Price 7d:", 11, 110, 4);
+        tft.drawString("7d (%) ", 11, 110, 4);
         tft.drawString(String(percent_change_7d), 156, 110, 4);
         delay(20000);
       }
@@ -240,15 +256,26 @@ void printTickerData() {
 
 
 float RSSI = 0.0;
+int tokenCode = 1;
 
 void loop() {
   unsigned long timeNow = millis();
   if ((timeNow > api_due_time))  {
+
+    // int symbol logo
+    tft.fillRect(0, 0, 240, 135, ST7735_BLACK);    
+    if (tokenCode == 5268){
+      tokenCode = 1;
+      tft.pushImage(0, 0, btc_symbol_Width, btc_symbol_Height, btc_symbol);
+    } else {
+      tokenCode = 5268;
+      tft.pushImage(0, 0, ewt_symbol_Width, ewt_symbol_Height, ewt_symbol);
+    }
+    
     // int signal bars
     Serial.print("WiFi Signal strength: ");
     Serial.print(WiFi.RSSI());
     tft.fillRect(200, 2, 40, 32, ST7735_BLACK);
-
 
     int bars;
     RSSI = WiFi.RSSI();
@@ -277,8 +304,8 @@ void loop() {
     for (int b = 0; b <= bars; b++) {
       tft.fillRect(202 + (b * 6), 23 - (b * 4), 5, b * 4, ST7735_GRAY);
     }
-    
-    printTickerData();
+        
+    printTickerData(tokenCode);
 
   }
 
